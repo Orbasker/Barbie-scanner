@@ -11,10 +11,9 @@ type: 'python:3.13'
 
 build:
   flavor: none
-  commands:
-    build: |
-      pip install uv
-      uv pip install --system
+  build: |
+    pip install uv
+    uv pip install --system
 
 # The following block defines a single writable directory, 'web/uploads'
 # The 'source' specifies where the writable mount is. The 'local' source
