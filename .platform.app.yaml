@@ -29,7 +29,4 @@ disk: 256
 # side is in the form '<service name>:<endpoint name>'.
 relationships:
     chrome-headless: 'chrome-headless:http'
-    null: 'network-storage:something'
-    opensearch: 'opensearch:opensearch'
-    oracle-mysql: 'oracle-mysql:mysql'
-    postgresql: 'postgresql:postgresql'
+    
