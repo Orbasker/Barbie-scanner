@@ -125,3 +125,4 @@ async def scrape_and_notify():
 
 if __name__ == "__main__":
     asyncio.run(scrape_and_notify())
+    # running
