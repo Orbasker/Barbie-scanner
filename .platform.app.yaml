@@ -16,6 +16,20 @@ hooks:
   build: |
     pip install uv
     uv sync
+    uv run playwright install-deps chromium
+    uv run playwright install chromium
+    uv run playwright install-deps firefox
+    uv run playwright install firefox
+    uv run playwright install-deps webkit
+    uv run playwright install webkit
+    uv run playwright install-deps edge
+    uv run playwright install edge
+    uv run playwright install-deps opera
+    uv run playwright install opera
+    uv run playwright install-deps brave
+    uv run playwright install brave
+    uv run playwright install-deps edge-chromium
+    uv run pip install uvicorn --system
 
 # The following block defines a single writable directory, 'web/uploads'
 # The 'source' specifies where the writable mount is. The 'local' source
