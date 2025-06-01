@@ -11,6 +11,8 @@ type: 'python:3.13'
 
 build:
   flavor: none
+
+hooks:
   build: |
     pip install uv
     uv pip install --system
