@@ -15,7 +15,7 @@ build:
 hooks:
   build: |
     pip install uv
-    uv pip install --system
+    uv sync
 
 # The following block defines a single writable directory, 'web/uploads'
 # The 'source' specifies where the writable mount is. The 'local' source
