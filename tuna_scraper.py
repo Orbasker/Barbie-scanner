@@ -2,7 +2,8 @@ import os
 import json
 import base64
 from email.message import EmailMessage
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
+import asyncio
 from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -56,16 +57,16 @@ ARTISTS = {
 }
 
 # === Scraper via Playwright (JS context) ===
-def scrape_shows():
+async def scrape_shows():
     try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            context = browser.new_context()
-            page = context.new_page()
-            page.goto("https://barby.co.il", timeout=60000)
-            page.wait_for_timeout(4000)
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context()
+            page = await context.new_page()
+            await page.goto("https://barby.co.il", timeout=60000)
+            await page.wait_for_timeout(4000)
 
-            data = page.evaluate("""() => {
+            data = await page.evaluate("""() => {
                 return fetch("https://barby.co.il/api/shows/find", {
                     method: "GET",
                     headers: { "Accept": "application/json" },
@@ -73,7 +74,7 @@ def scrape_shows():
                 }).then(res => res.json());
             }""")
 
-            browser.close()
+            await browser.close()
             return data.get("returnShow", {}).get("show", [])
     except Exception as e:
         logger.error(f"Failed to scrape shows: {str(e)}")
@@ -97,10 +98,10 @@ def format_report(matched_shows):
     return body
 
 # === Main function to be called by scheduler ===
-def scrape_and_notify():
+async def scrape_and_notify():
     try:
         logger.info("📡 Starting show scraping process...")
-        all_shows = scrape_shows()
+        all_shows = await scrape_shows()
 
         logger.info("🎯 Matching artists...")
         matched = find_matching_shows(all_shows, ARTISTS)
@@ -123,4 +124,4 @@ def scrape_and_notify():
         return {"status": "error", "error": str(e)}
 
 if __name__ == "__main__":
-    scrape_and_notify()
+    asyncio.run(scrape_and_notify())
