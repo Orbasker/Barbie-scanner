@@ -29,7 +29,7 @@ hooks:
     uv run playwright install-deps brave
     uv run playwright install brave
     uv run playwright install-deps edge-chromium
-    uv run pip install uvicorn --system
+    uv run pip install uvicorn 
 
 # The following block defines a single writable directory, 'web/uploads'
 # The 'source' specifies where the writable mount is. The 'local' source
