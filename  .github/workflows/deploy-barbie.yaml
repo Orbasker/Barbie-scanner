@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - lambda
+      - lambda-improvements
 
 env:
   AWS_REGION: eu-west-1
@@ -31,7 +32,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --platform linux/amd64 -t $ECR_REPOSITORY:latest .
+          docker build --platform linux/amd64 -t $ECR_REPOSITORY:latest ./lambda_scraper
 
       - name: Tag Docker image
         run: |
