@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --platform linux/amd64 -t $ECR_REPOSITORY:latest .
+          docker build -t $ECR_REPOSITORY:latest .
 
       - name: Tag Docker image
         run: |
