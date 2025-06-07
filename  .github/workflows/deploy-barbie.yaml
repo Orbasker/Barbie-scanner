@@ -32,7 +32,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --platform linux/amd64 -t $ECR_REPOSITORY:latest ./lambda_scraper
+          docker build -t $ECR_REPOSITORY:latest ./lambda_scraper
 
       - name: Tag Docker image
         run: |
