@@ -14,11 +14,28 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # === Artist Variations List ===
-ARTISTS = {
-    "Tuna": ["tuna", "טונה", "Tuna"],
-    "Ravid Plotnik": ["Ravid Plotnik", "Ravid Plotnik", "נצ׳י נצ׳", "רביד פלוטניק", "ravid plotnik"],
-    "Shazamat": ["Shazamat", "שזהמט", "shazamat","שאזאמאט"],
-}
+# ARTISTS = {
+#     "Tuna": ["tuna", "טונה", "Tuna"],
+#     "Ravid Plotnik": ["Ravid Plotnik", "Ravid Plotnik", "נצ׳י נצ׳", "רביד פלוטניק", "ravid plotnik"],
+#     "Shazamat": ["Shazamat", "שזהמט", "shazamat","שאזאמאט"],
+# }
+def load_artists_from_s3(bucket: str, key: str):
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.get_object(Bucket=bucket, Key=key)
+        content = response['Body'].read().decode('utf-8')
+        return json.loads(content)
+    except Exception as e:
+        logger.error(f"Failed to load artists from S3: {str(e)}")
+        return {}
+
+def merge_artists(base: dict, additions: dict):
+    merged = base.copy()
+    for artist, names in additions.items():
+        merged.setdefault(artist, [])
+        merged[artist].extend(name for name in names if name not in merged[artist])
+    return merged
+
 
 def scrape_shows():
     try:
@@ -90,13 +107,25 @@ def send_sns_notification(subject, message, topic_arn):
 
 def handler(event, context):
     try:
+         # 1. Load base artists list from S3
+        s3_bucket = "barbie-scanner"
+        s3_key = "artists.json"
+        s3_artists = load_artists_from_s3(s3_bucket, s3_key)
+
+        # 2. Load optional artist additions from event payload
+        payload_artists = event.get("extra_artists", {})  # Expecting dict
+        logger.info(f"Loaded {len(payload_artists)} additional artists from payload.")
+
+        # 3. Merge
+        artists = merge_artists(s3_artists, payload_artists)
+
         logger.info("📡 Starting show scraping process...")
         print("📡 Starting show scraping process...")
         all_shows = scrape_shows()
 
         logger.info("🎯 Matching artists...")
         print("🎯 Matching artists...")
-        matched = find_matching_shows(all_shows, ARTISTS)
+        matched = find_matching_shows(all_shows, artists)
 
         print(f'matched: {matched}')
 
